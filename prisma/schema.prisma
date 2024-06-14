@@ -49,7 +49,7 @@ model Server {
 
 enum MembershipRole {
   ADMIN
-  MODERAROT
+  MODERATOR
   GUEST
 }
 
