@@ -19,6 +19,7 @@ const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
       <div className="relative h-20 w-20">
         <Image
           fill
+          sizes="100wv"
           priority
           src={value}
           alt="Upload"

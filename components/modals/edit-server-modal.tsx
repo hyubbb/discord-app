@@ -2,7 +2,6 @@
 
 import * as z from "zod";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -27,18 +26,22 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import FileUpload from "@/components/file-upload";
 import { useRouter } from "next/navigation";
+import { useModal } from "@/hooks/use-modal-store";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   imageUrl: z.string().min(1, { message: "Image is required" }),
 });
 
-const InitialModal = () => {
-  const [isMounted, setIsMounted] = useState(false);
+const EditServerModal = () => {
+  const { isOpen, onClose, type, data } = useModal();
+  const { server } = data;
   const router = useRouter();
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+
+  // open 함수가 실행이 되고 type이 createServer이면 생성한다.
+  // navigation-action에서 동작함
+  const isModalOpen = isOpen && type === "editServer";
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -48,23 +51,34 @@ const InitialModal = () => {
     },
   });
 
+  useEffect(() => {
+    if (server) {
+      form.setValue("name", server.name);
+      form.setValue("imageUrl", server.imageUrl);
+    }
+  }, [server, form]);
+
   const isLoading = form?.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post("/api/servers", values);
+      await axios.patch(`/api/servers/${server?.id}`, values);
+
       form.reset();
       router.refresh();
-      window.location.reload();
+      onClose();
     } catch (error) {
       console.log(error);
     }
   };
 
-  if (!isMounted) return null;
+  const handleClose = () => {
+    // dialog가 닫히면 동작
+    onClose();
+  };
 
   return (
-    <Dialog open>
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="overflow-hidden bg-white p-0 text-black">
         <DialogHeader className="px-6 pt-8">
           <DialogTitle className="text-center text-2xl">
@@ -131,4 +145,4 @@ const InitialModal = () => {
   );
 };
 
-export default InitialModal;
+export default EditServerModal;
