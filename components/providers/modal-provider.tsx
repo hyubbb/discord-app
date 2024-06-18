@@ -2,7 +2,7 @@ import CreateServerModal from "@/components/modals/create-server-modal";
 import InviteModal from "@/components/modals/invite-modal";
 import EditServerModal from "@/components/modals/edit-server-modal";
 import MembersModal from "@/components/modals/members-modal";
-import { currentProfile } from "@/lib/current-profile";
+import CreateChannelModal from "@/components/modals/create-channel-modal";
 
 export const ModalProvider = async () => {
   return (
@@ -11,6 +11,7 @@ export const ModalProvider = async () => {
       <InviteModal />
       <EditServerModal />
       <MembersModal />
+      <CreateChannelModal />
     </>
   );
 };
