@@ -9,13 +9,12 @@ export async function PATCH(
 ) {
   try {
     const profile = await currentProfile();
-
     if (!profile) {
-      return new NextResponse("Unauthorized!", { status: 401 });
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     if (!params.serverId) {
-      return new NextResponse("Server ID Missing!", { status: 400 });
+      return new NextResponse("Bad Request", { status: 400 });
     }
 
     const server = await db.server.update({
@@ -30,7 +29,7 @@ export async function PATCH(
 
     return NextResponse.json(server);
   } catch (error) {
-    console.log("[SERVER_ID]", error);
-    return new NextResponse("Internal Error!", { status: 500 });
+    console.log("[SERVERS_PATCH]", error);
+    return new NextResponse("Internal error", { status: 500 });
   }
 }

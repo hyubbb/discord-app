@@ -104,7 +104,7 @@ const MembersModal = () => {
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="mt-8 max-h-[420px] pr-6">
-          {server?.members.map((member) => (
+          {server?.members?.map((member) => (
             <div key={member.id} className="mb-6 flex items-center gap-x-2">
               <UserAvatar src={member.profile.imageUrl} />
 
@@ -119,7 +119,7 @@ const MembersModal = () => {
                 loadingId !== member.id && (
                   <div className="ml-auto">
                     <DropdownMenu>
-                      <DropdownMenuTrigger>
+                      <DropdownMenuTrigger asChild>
                         <MoreVertical className="h-4 w-4 text-zinc-500" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent side="left">

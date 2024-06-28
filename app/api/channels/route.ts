@@ -3,11 +3,12 @@ import { db } from "@/lib/db";
 import { MembershipRole } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-export const POST = async (req: Request) => {
+export async function POST(req: Request) {
   try {
     const profile = await currentProfile();
-    const { searchParams } = new URL(req.url);
     const { name, type } = await req.json();
+    const { searchParams } = new URL(req.url);
+
     const serverId = searchParams.get("serverId");
 
     if (!profile) {
@@ -15,11 +16,13 @@ export const POST = async (req: Request) => {
     }
 
     if (!serverId) {
-      return new NextResponse("Channel ID missing", { status: 400 });
+      return new NextResponse("Server ID missing", { status: 400 });
     }
 
     if (name === "general") {
-      return new NextResponse("Name cannot be 'general'", { status: 400 });
+      return new NextResponse("Channel name cannot be 'general'", {
+        status: 400,
+      });
     }
 
     const server = await db.server.update({
@@ -29,7 +32,7 @@ export const POST = async (req: Request) => {
           some: {
             profileId: profile.id,
             role: {
-              in: [MembershipRole.ADMIN, MembershipRole.MODERATOR],
+              in: [MembershipRole.MODERATOR, MembershipRole.ADMIN],
             },
           },
         },
@@ -38,8 +41,8 @@ export const POST = async (req: Request) => {
         channels: {
           create: {
             profileId: profile.id,
-            type,
             name,
+            type,
           },
         },
       },
@@ -47,7 +50,7 @@ export const POST = async (req: Request) => {
 
     return NextResponse.json(server);
   } catch (error) {
-    console.log("[CHANNELS POST]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    console.log("[CHANNELS_POST]", error);
+    return new NextResponse("Internal error", { status: 500 });
   }
-};
+}

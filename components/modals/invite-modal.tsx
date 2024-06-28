@@ -20,30 +20,12 @@ import { ServerWithMembersWithProfiles } from "@/types";
 const InviteModal = () => {
   const { onOpen, isOpen, onClose, type, data } = useModal();
   const origin = useOrigin();
-  const { server } = data as { server: ServerWithMembersWithProfiles };
-  const [copied, setCopied] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // open 함수가 실행이 되고 type이 createServer이면 생성한다.
-  // navigation-action에서 동작함
   const isModalOpen = isOpen && type === "invite";
-
+  const { server } = data as { server: ServerWithMembersWithProfiles };
   const inviteUrl = `${origin}/invite/${server?.inviteCode}`;
 
-  const onNew = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.patch(
-        `/api/servers/${server?.id}/invite-code`,
-      );
-      onOpen("invite", { server: response.data });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  const [copied, setCopied] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const onCopy = () => {
     navigator.clipboard.writeText(inviteUrl);
     setCopied(true);
@@ -53,28 +35,42 @@ const InviteModal = () => {
     }, 1000);
   };
 
+  const onNew = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.patch(
+        `/api/servers/${server?.id}/invite-code`,
+      );
+
+      onOpen("invite", { server: response.data });
+    } catch (error) {
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
       <DialogContent className="overflow-hidden bg-white p-0 text-black">
         <DialogHeader className="px-6 pt-8">
-          <DialogTitle className="text-center text-2xl">
-            Invite Friends
+          <DialogTitle className="text-center text-2xl font-bold">
+            Invite People
           </DialogTitle>
         </DialogHeader>
-        <div className="p-6 ">
+        <div className="p-6">
           <Label className="text-xs font-bold uppercase text-zinc-500 dark:text-secondary/70">
-            Server invite link
+            Server Invite Link
           </Label>
           <div className="mt-2 flex items-center gap-x-2">
             <Input
               disabled={isLoading}
               className="border-0 bg-zinc-300/50 text-black focus-visible:ring-0 focus-visible:ring-offset-0"
               value={inviteUrl}
-              readOnly
             />
             <Button disabled={isLoading} onClick={onCopy} size="icon">
               {copied ? (
-                <Check className="h-4 w-4 text-green-500" />
+                <Check className="h-4 w-4" />
               ) : (
                 <Copy className="h-4 w-4" />
               )}
@@ -87,8 +83,8 @@ const InviteModal = () => {
             size="sm"
             className="mt-4 text-xs text-zinc-500"
           >
-            Generate a new Link
             <RefreshCw className="ml-2 h-4 w-4" />
+            Generate link
           </Button>
         </div>
       </DialogContent>
