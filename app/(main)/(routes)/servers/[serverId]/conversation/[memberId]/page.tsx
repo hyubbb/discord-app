@@ -54,6 +54,7 @@ const MemberIdPage = async ({ params }: MemberIdPageProps) => {
         serverId={params.serverId}
         type="conversation"
       />
+      <div className="flex-1">Future Messages</div>
     </div>
   );
 };
