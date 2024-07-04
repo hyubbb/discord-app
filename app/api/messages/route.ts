@@ -4,8 +4,9 @@ import { Message } from "@prisma/client";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 
-const MESSAGES_BATCH = 10;
+const MESSAGES_BATCH = 15;
 
+// use-chat-query
 export async function GET(req: Request) {
   try {
     const profile = await currentProfile();

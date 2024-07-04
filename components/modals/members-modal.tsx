@@ -34,11 +34,10 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { MembershipRole } from "@prisma/client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { set } from "zod";
 
 const roleIconMap = {
   GUEST: null,
@@ -119,7 +118,10 @@ const MembersModal = () => {
                 loadingId !== member.id && (
                   <div className="ml-auto">
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+                      <DropdownMenuTrigger
+                        asChild
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <MoreVertical className="h-4 w-4 text-zinc-500" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent side="left">

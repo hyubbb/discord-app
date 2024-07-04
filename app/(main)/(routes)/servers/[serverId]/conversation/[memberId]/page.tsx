@@ -1,4 +1,7 @@
 import ChatHeader from "@/components/chat/chat-header";
+import ChatInput from "@/components/chat/chat-input";
+import { ChatMessages } from "@/components/chat/chat-messages";
+import { MediaRoom } from "@/components/media-room";
 import { getOrCreateConversation } from "@/lib/conversation";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
@@ -10,9 +13,12 @@ interface MemberIdPageProps {
     memberId: string;
     serverId: string;
   };
+  searchParams: {
+    video?: string;
+  };
 }
 
-const MemberIdPage = async ({ params }: MemberIdPageProps) => {
+const MemberIdPage = async ({ params, searchParams }: MemberIdPageProps) => {
   const profile = await currentProfile();
 
   if (!profile) {
@@ -33,6 +39,7 @@ const MemberIdPage = async ({ params }: MemberIdPageProps) => {
     return redirect("/");
   }
 
+  // 대화생성
   const conversation = await getOrCreateConversation(
     currentMember.id,
     params.memberId,
@@ -54,7 +61,30 @@ const MemberIdPage = async ({ params }: MemberIdPageProps) => {
         serverId={params.serverId}
         type="conversation"
       />
-      <div className="flex-1">Future Messages</div>
+      {searchParams.video && (
+        <MediaRoom chatId={conversation.id} video={true} audio={false} />
+      )}
+      {!searchParams.video && (
+        <>
+          <ChatMessages
+            name={otherMember.profile.name}
+            member={currentMember}
+            chatId={conversation.id}
+            apiUrl="/api/direct-messages"
+            socketUrl="/api/socket/direct-messages"
+            socketQuery={{ conversationId: conversation.id }}
+            paramKey="conversationId"
+            paramValue={conversation.id}
+            type="conversation"
+          />
+          <ChatInput
+            name={otherMember.profile.name}
+            type="conversation"
+            apiUrl="/api/socket/direct-messages"
+            query={{ conversationId: conversation.id }}
+          />
+        </>
+      )}
     </div>
   );
 };
